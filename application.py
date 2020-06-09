@@ -28,7 +28,7 @@ db = scoped_session(sessionmaker(bind=engine))
 @login_required
 @app.route("/")
 def index():
-    return redirect("/login")
+    return redirect("/search")
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -45,7 +45,6 @@ def login():
 
     #check if password is correct --> if correct let in, else error
     if check_password_hash(user.hash, password):
-        db.commit()
         session["user_id"] = user.id
         return redirect("/")
     else:
@@ -61,8 +60,18 @@ def register():
     username = request.form.get("username")
     password = request.form.get("password")
 
+    #insert info into table users
     db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": username, "hash": generate_password_hash(password)})
     db.commit()
 
     return redirect("/login")
+
+@login_required
+@app.route("/search/<string:keyword>")
+def search(keyword):
+
+    books = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn IN :keyword OR title IN :keyword OR author IN :keyword", {"keyword": (keyword + "%")}).fetchall()
+
+    return render_template("booklist.html", books=books)
+
     
