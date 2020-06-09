@@ -35,10 +35,22 @@ def login():
     if request.method == 'GET':
         return render_template("login.html")
 
+    username = request.form.get("username")
+    hash = request.form.get("hash")
+
+    db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": username, "hash": generate_password_hash(password)})
+    db.commit()
+
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template("register.html")
+    
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": username, "hash": generate_password_hash(password)})
+    db.commit()
     
