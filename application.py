@@ -1,7 +1,7 @@
 import os
 import requests
 
-from flask import Flask, session, redirect, render_template
+from flask import Flask, session, redirect, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -25,7 +25,20 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-
+@login_required
 @app.route("/")
 def index():
-    return "Project 1: TODO"
+    return redirect("/login")
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template("login.html")
+
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template("register.html")
+    
