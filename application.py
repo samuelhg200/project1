@@ -36,10 +36,20 @@ def login():
         return render_template("login.html")
 
     username = request.form.get("username")
-    hash = request.form.get("hash")
+    password = request.form.get("password")
 
-    db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": username, "hash": generate_password_hash(password)})
-    db.commit()
+    #get user info, return error if failed
+    user = db.execute("SELECT id, hash FROM users WHERE username = :username", {"username": username}).fetchone()
+    if not user:
+        return "ERROR"
+
+    #check if password is correct --> if correct let in, else error
+    if check_password_hash(user.hash, password):
+        db.commit()
+        session["user_id"] = user.id
+        return redirect("/")
+    else:
+        return "Incorrect password"
 
 
 
@@ -53,4 +63,6 @@ def register():
 
     db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)", {"username": username, "hash": generate_password_hash(password)})
     db.commit()
+
+    return redirect("/login")
     

@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Login</h1>
-    <form action="{{ url_for('login'), method = 'post' }}">
+    <h3>Register</h3>
+    <form action="/register" method="post">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" name="username">
@@ -14,7 +14,7 @@
           <div class="form-group">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" name="password" aria-describedby="passwordHelp">
-            <small id="passwordHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+            <small id="passwordHelp" class="form-text text-muted">We'll never share your password with anyone else.</small>
           </div>
           <button type="submit" class="btn btn-primary">Register</button>
     </form>

@@ -5,15 +5,15 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Login</h1>
-    <form action="{{ url_for('login') }}" , method = "post">
+    <h3>Login</h3>
+    <form action="/login" method = "post">
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" class="form-control" id="username" name="username">
           </div>
           <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
-            <input type="password" class="form-control" id="exampleInputPassword1" name="hash">
+            <input type="password" class="form-control" id="exampleInputPassword1" name="password">
           </div>
           <button type="submit" class="btn btn-primary">Login</button>
     </form>
