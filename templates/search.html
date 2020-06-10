@@ -5,10 +5,10 @@
 {% endblock %}
 
 {% block main %}
-    <p class='peterpan'>HIHIHIHI</p>
-    <form action="/search" method = "post" style='margin-top: 10%'>
+    <h2 style='text-align: left'>Search book:</h2>
+    <br>
+    <form action="/search" method = "post">
         <div class="form-group">
-            <label for="keyword" class='peterpan'>Search Book</label>
             <input type="text" class="form-control" id="keyword" name="keyword" aria-describedby="keywordsearch">
             <small id="keywordsearch" class="form-text text-muted">You can search by isbn, title or author!</small>
           </div>
