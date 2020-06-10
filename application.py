@@ -1,11 +1,12 @@
 import os
 import requests
 
-from flask import Flask, session, redirect, render_template, request
+from flask import Flask, session, redirect, render_template, request, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
+from tempfile import mkdtemp
 
 from help import login_required
 
@@ -16,17 +17,28 @@ API_KEY = "6w569cwH9fLUjf2I6z3Ww"
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
 
+# Ensure responses aren't cached in server
+@app.after_request
+def after_request(response):
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate,  public, max-age=0"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
 # Configure session to use filesystem
+app.config["SESSION_FILE_DIR"] = mkdtemp()
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
-@login_required
+
 @app.route("/")
+@login_required
 def index():
     return redirect("/search")
 
@@ -66,12 +78,29 @@ def register():
 
     return redirect("/login")
 
+@app.route("/search", methods=['GET', 'POST'])
 @login_required
-@app.route("/search/<string:keyword>")
-def search(keyword):
+def search():
+    if request.method == 'GET':
+        return render_template("search.html")
+    
+    keyword = request.form.get('keyword')
 
-    books = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn IN :keyword OR title IN :keyword OR author IN :keyword", {"keyword": (keyword + "%")}).fetchall()
+    if not keyword:
+        return redirect(url_for('booksearch', keyword= ""))
+
+    return redirect(url_for('lookup', keyword=keyword))
+
+
+
+@app.route("/search/<string:keyword>")
+@login_required
+def lookup(keyword):
+
+
+    books = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn ILIKE :keyword OR title ILIKE :keyword OR author ILIKE :keyword", {"keyword": "%" + keyword + "%"}).fetchall()
 
     return render_template("booklist.html", books=books)
 
-    
+
+   

@@ -6,4 +6,12 @@ nav ul a {
   color: blue;
 }
 
+.container {
+  margin-top: 8%;
+}
+
+p {
+  color: yellow;
+}
+
 /*# sourceMappingURL=styles.css.map */
